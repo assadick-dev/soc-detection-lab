@@ -1,0 +1,35 @@
+<!-- Local rules -->
+<!-- Modify it at your will. -->
+<!-- Copyright (C) 2015, Wazuh Inc. -->
+
+<!-- ===== Regles de detection custom - Lab SOC ===== -->
+<group name="sysmon,attack,">
+
+  <!-- T1059.001 - PowerShell encode avec pattern offensif -->
+  <rule id="100100" level="13">
+    <if_sid>92057</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(downloadstring|invoke-expression|iex|frombase64)</field>
+    <description>PowerShell encode AVEC pattern offensif - forte suspicion (T1059.001)</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+  </rule>
+
+  <!-- T1547.001 - Persistance via cle Run du registre -->
+  <rule id="100102" level="10">
+    <if_sid>92052</if_sid>
+    <field name="win.eventdata.targetObject" type="pcre2">(?i)\\CurrentVersion\\Run</field>
+    <description>Modification d'une cle Run - methode de persistance frequente (T1547.001)</description>
+    <mitre>
+      <id>T1547.001</id>
+    </mitre>
+  </rule>
+
+  <!-- Faux positif : fichier de test de politique PowerShell (benin) -->
+  <rule id="100110" level="0">
+    <if_sid>92213</if_sid>
+    <field name="win.eventdata.targetFilename" type="pcre2">(?i)__PSScriptPolicyTest_.*\.ps1$</field>
+    <description>PowerShell script policy test file - faux positif connu, ignore</description>
+  </rule>
+
+</group>
